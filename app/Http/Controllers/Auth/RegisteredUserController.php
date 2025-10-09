@@ -33,13 +33,16 @@ class RegisteredUserController extends Controller
         $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|string|lowercase|email|max:255|unique:'.User::class,
-            'password' => ['required', 'confirmed', Rules\Password::defaults()],
+            'phone' => 'required|string|max:20',
+            'country' => 'required|string|max:2',
         ]);
 
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
-            'password' => Hash::make($request->password),
+            'phone' => $request->phone,
+            'country' => $request->country,
+            'password' => Hash::make(uniqid()), // Generate random password since it's not needed
         ]);
 
         event(new Registered($user));
@@ -48,6 +51,6 @@ class RegisteredUserController extends Controller
 
         $request->session()->regenerate();
 
-        return to_route('dashboard');
+        return to_route('register.thanks');
     }
 }
