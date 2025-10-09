@@ -2,6 +2,7 @@
 import type { HTMLAttributes } from 'vue'
 import { cn } from '@/lib/utils'
 import { useVModel } from '@vueuse/core'
+import { ref } from 'vue'
 
 const props = defineProps<{
   defaultValue?: string | number
@@ -17,17 +18,30 @@ const modelValue = useVModel(props, 'modelValue', emits, {
   passive: true,
   defaultValue: props.defaultValue,
 })
+
+const isFocused = ref(false)
 </script>
 
 <template>
-  <input
-    v-model="modelValue"
-    data-slot="input"
-    :class="cn(
-      'file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input flex h-9 w-full min-w-0 rounded-md border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm',
-      'focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]',
-      'aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive',
-      props.class,
-    )"
-  >
+  <div class="relative">
+    <input
+      v-model="modelValue"
+      data-slot="input"
+      @focus="isFocused = true"
+      @blur="isFocused = false"
+      :class="cn(
+        'file:text-foreground placeholder:text-muted-foreground selection:bg-orange-500 selection:text-white dark:bg-input/30 border-input flex h-12 w-full min-w-0 rounded-lg border bg-white dark:bg-gray-900/50 px-3 py-2.5 text-base shadow-sm transition-all outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm',
+        'hover:border-orange-300 dark:hover:border-orange-700',
+        'focus:border-orange-500 focus:ring-2 focus:ring-orange-500/20 dark:focus:ring-orange-500/30',
+        'aria-invalid:ring-red-500/20 dark:aria-invalid:ring-red-500/40 aria-invalid:border-red-500',
+        props.class,
+      )"
+    >
+
+    <!-- Floating focus indicator -->
+    <div
+      v-if="isFocused"
+      class="absolute -inset-[1px] -z-10 rounded-lg bg-gradient-to-r from-orange-500 to-amber-500 opacity-50 blur-sm animate-pulse"
+    ></div>
+  </div>
 </template>
