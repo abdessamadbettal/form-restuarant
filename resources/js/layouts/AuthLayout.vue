@@ -33,7 +33,7 @@ defineProps<{
                             :href="home()"
                             class="group flex flex-col items-center gap-2 font-medium transition-transform hover:scale-105"
                         >
-                            <div class="relative flex h-16 w-16 items-center justify-center rounded-xl bg-gradient-to-br from-orange-500 to-orange-600 shadow-xl shadow-orange-500/40 ring-2 ring-orange-100 dark:ring-orange-900/50 transition-all group-hover:shadow-orange-500/60 group-hover:rotate-3">
+                            <div class="relative flex h-16 w-16 items-center justify-center group-hover:rotate-3">
                                 <AppLogoIcon class="size-8 fill-current text-white drop-shadow-lg" />
                                 <!-- Sparkle effect -->
                                 <div class="absolute -right-0.5 -top-0.5 text-sm animate-pulse">✨</div>
@@ -42,13 +42,13 @@ defineProps<{
                         </Link>
 
                         <div class="space-y-2 text-center">
-                            <div class="inline-flex items-center gap-1.5 rounded-full bg-orange-100 dark:bg-orange-900/30 px-3 py-1 text-xs font-medium text-orange-700 dark:text-orange-300">
+                            <!-- <div class="inline-flex items-center gap-1.5 rounded-full bg-orange-100 dark:bg-orange-900/30 px-3 py-1 text-xs font-medium text-orange-700 dark:text-orange-300">
                                 <span class="relative flex h-1.5 w-1.5">
                                     <span class="absolute inline-flex h-full w-full animate-ping rounded-full bg-orange-400 opacity-75"></span>
                                     <span class="relative inline-flex h-1.5 w-1.5 rounded-full bg-orange-500"></span>
                                 </span>
                                 Special Offer
-                            </div>
+                            </div> -->
                             <h1 class="text-2xl font-bold bg-gradient-to-r from-orange-600 to-amber-600 bg-clip-text text-transparent">
                                 {{ title }}
                             </h1>
@@ -68,11 +68,11 @@ defineProps<{
                         <slot />
                     </div>
 
-                    <!-- Trust indicators - Compact -->
-                    <div class="flex items-center justify-center gap-6 text-xs text-muted-foreground">
-                        <div class="flex items-center gap-1.5">
-                            <div class="flex h-6 w-6 items-center justify-center rounded-full bg-green-100 dark:bg-green-900/30">
-                                <span class="text-sm">🔒</span>
+                    <!-- Trust indicators -->
+                    <!-- <div class="flex items-center justify-center gap-8 text-xs text-muted-foreground">
+                        <div class="flex items-center gap-2">
+                            <div class="flex h-8 w-8 items-center justify-center rounded-full bg-green-100 dark:bg-green-900/30">
+                                <span class="text-base">🔒</span>
                             </div>
                             <span class="text-xs">Secure</span>
                         </div>
@@ -90,7 +90,7 @@ defineProps<{
                             </div>
                             <span class="text-xs">Rewards</span>
                         </div>
-                    </div>
+                    </div> -->
                 </div>
             </div>
         </div>

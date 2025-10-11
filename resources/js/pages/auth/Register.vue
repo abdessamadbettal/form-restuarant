@@ -1,12 +1,14 @@
 <script setup lang="ts">
 import RegisteredUserController from '@/actions/App/Http/Controllers/Auth/RegisteredUserController';
 import InputError from '@/components/InputError.vue';
+import TextLink from '@/components/TextLink.vue';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import AuthBase from '@/layouts/AuthLayout.vue';
+import { login } from '@/routes';
 import { Form, Head } from '@inertiajs/vue3';
-import { LoaderCircle, Search, ChevronDown, Check, User, Mail, Phone, Globe, Sparkles } from 'lucide-vue-next';
+import { LoaderCircle, Search, ChevronDown, Check, User, Mail, Phone, Globe, Sparkles, Info, Shield, Database, AlertCircle, X, Lock } from 'lucide-vue-next';
 import { ref, computed, onMounted, onBeforeUnmount } from 'vue';
 
 interface Country {
@@ -27,6 +29,8 @@ const selectedCountry = ref<Country | null>(null);
 const searchQuery = ref('');
 const countryInputRef = ref<HTMLInputElement | null>(null);
 const formProgress = ref(0);
+const showTermsModal = ref(false);
+const acceptedTerms = ref(false);
 
 // Fetch countries from REST Countries API
 onMounted(async () => {
@@ -63,7 +67,6 @@ const selectCountry = (country: Country) => {
     isDropdownOpen.value = false;
     searchQuery.value = '';
 
-    // Update the hidden input value
     if (countryInputRef.value) {
         countryInputRef.value.value = country.cca2;
         countryInputRef.value.dispatchEvent(new Event('input', { bubbles: true }));
@@ -76,7 +79,6 @@ const toggleDropdown = () => {
     isDropdownOpen.value = !isDropdownOpen.value;
 };
 
-// Close dropdown when clicking outside
 const handleClickOutside = (event: MouseEvent) => {
     const target = event.target as HTMLElement;
     if (!target.closest('.country-select-wrapper')) {
@@ -90,23 +92,38 @@ const updateProgress = () => {
         document.getElementById('name') as HTMLInputElement,
         document.getElementById('email') as HTMLInputElement,
         document.getElementById('phone') as HTMLInputElement,
-        selectedCountry.value
+        selectedCountry.value,
+        acceptedTerms.value
     ];
 
     const filledFields = fields.filter(field => {
         if (field instanceof HTMLInputElement) {
             return field.value.trim() !== '';
         }
-        return field !== null;
+        return field !== null && field !== false;
     }).length;
 
     formProgress.value = (filledFields / fields.length) * 100;
+};
+
+const openTermsModal = () => {
+    showTermsModal.value = true;
+};
+
+const closeTermsModal = () => {
+    showTermsModal.value = false;
+};
+
+const acceptTerms = () => {
+    acceptedTerms.value = true;
+    showTermsModal.value = false;
+    updateProgress();
 };
 </script>
 
 <template>
     <AuthBase
-        title="Join Our Restaurant"
+        title="Frank Meat & Taps - Wi-Fi Terms of Service"
         description="Sign up for exclusive offers and updates"
     >
         <Head title="Register" />
@@ -130,7 +147,6 @@ const updateProgress = () => {
                 </div>
             </div>
 
-
             <!-- Country Field with Custom Select -->
             <div class="space-y-1.5">
                 <Label for="country" class="flex items-center gap-1.5 text-xs">
@@ -140,7 +156,6 @@ const updateProgress = () => {
                 </Label>
 
                 <div class="country-select-wrapper relative">
-                    <!-- Hidden input for form submission -->
                     <input
                         ref="countryInputRef"
                         type="hidden"
@@ -149,7 +164,6 @@ const updateProgress = () => {
                         :value="selectedCountry?.cca2 || ''"
                     />
 
-                    <!-- Custom Select Button -->
                     <button
                         type="button"
                         @click="toggleDropdown"
@@ -178,7 +192,6 @@ const updateProgress = () => {
                         />
                     </button>
 
-                    <!-- Dropdown Menu -->
                     <Transition
                         enter-active-class="transition duration-200 ease-out"
                         enter-from-class="opacity-0 scale-95"
@@ -191,7 +204,6 @@ const updateProgress = () => {
                             v-if="isDropdownOpen"
                             class="absolute z-50 mt-1.5 w-full rounded-lg border border-orange-200 dark:border-orange-800 bg-white dark:bg-gray-900 shadow-lg shadow-orange-500/10"
                         >
-                            <!-- Search Input -->
                             <div class="border-b border-orange-100 dark:border-orange-900 p-2">
                                 <div class="relative">
                                     <Search class="absolute left-2.5 top-1/2 h-3 w-3 -translate-y-1/2 text-muted-foreground" />
@@ -205,7 +217,6 @@ const updateProgress = () => {
                                 </div>
                             </div>
 
-                            <!-- Countries List -->
                             <div class="custom-scrollbar max-h-[240px] overflow-y-auto p-2">
                                 <template v-if="isLoadingCountries">
                                     <div class="flex items-center justify-center py-6">
@@ -327,16 +338,41 @@ const updateProgress = () => {
                 <InputError :message="errors.phone" />
             </div>
 
-
-
+            <!-- Terms of Service -->
+            <div class="space-y-2">
+                <div class="flex items-start gap-2.5">
+                    <input
+                        id="terms"
+                        type="checkbox"
+                        v-model="acceptedTerms"
+                        @change="updateProgress"
+                        :tabindex="5"
+                        required
+                        class="mt-0.5 h-4 w-4 rounded border-orange-300 text-orange-600 focus:ring-2 focus:ring-orange-500 focus:ring-offset-1"
+                    />
+                    <label for="terms" class="flex-1 text-[11px] leading-relaxed text-muted-foreground">
+                        I agree to the
+                        <button
+                            type="button"
+                            @click="openTermsModal"
+                            class="font-medium text-orange-600 hover:text-orange-700 dark:text-orange-400 dark:hover:text-orange-300 underline decoration-orange-300 underline-offset-2 transition-colors"
+                        >
+                            Wi-Fi Terms of Service
+                        </button>
+                        and consent to receive promotional emails
+                        <span class="text-destructive">*</span>
+                    </label>
+                </div>
+                <InputError :message="errors.terms" />
+            </div>
 
             <!-- Submit Button -->
             <Button
                 type="submit"
                 size="sm"
                 class="mt-2 w-full text-sm"
-                :tabindex="5"
-                :disabled="processing"
+                :tabindex="6"
+                :disabled="processing || !acceptedTerms"
                 variant="default"
                 data-test="register-user-button"
             >
@@ -350,7 +386,213 @@ const updateProgress = () => {
             <p class="text-center text-[10px] leading-relaxed text-muted-foreground">
                 By signing up, you agree to receive promotional emails and updates from us.
             </p>
+
+             <!-- Admin Login Link -->
+            <div class="pt-3 border-t border-border">
+                <div class="flex items-center justify-center gap-1.5 text-xs text-muted-foreground">
+                    <Lock class="h-3 w-3" />
+                    <span>Admin?</span>
+                    <TextLink :href="login()" class="text-xs font-medium">
+                        Login here
+                    </TextLink>
+                </div>
+            </div>
         </Form>
+
+        <!-- Terms of Service Modal -->
+        <Teleport to="body">
+            <Transition
+                enter-active-class="transition duration-200 ease-out"
+                enter-from-class="opacity-0"
+                enter-to-class="opacity-100"
+                leave-active-class="transition duration-150 ease-in"
+                leave-from-class="opacity-100"
+                leave-to-class="opacity-0"
+            >
+                <div
+                    v-if="showTermsModal"
+                    class="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4"
+                    @click="closeTermsModal"
+                >
+                    <Transition
+                        enter-active-class="transition duration-300 ease-out"
+                        enter-from-class="opacity-0 scale-95 translate-y-4"
+                        enter-to-class="opacity-100 scale-100 translate-y-0"
+                        leave-active-class="transition duration-200 ease-in"
+                        leave-from-class="opacity-100 scale-100 translate-y-0"
+                        leave-to-class="opacity-0 scale-95 translate-y-4"
+                    >
+                        <div
+                            v-if="showTermsModal"
+                            @click.stop
+                            class="relative w-full max-w-2xl max-h-[85vh] bg-white dark:bg-gray-900 rounded-2xl shadow-2xl shadow-orange-500/20 overflow-hidden"
+                        >
+                            <!-- Header -->
+                            <div class="sticky top-0 z-10 bg-gradient-to-br from-orange-500 to-amber-600 px-6 py-5">
+                                <div class="flex items-start justify-between">
+                                    <div class="flex items-start gap-3">
+                                        <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-white/20 backdrop-blur-sm">
+                                            <Shield class="h-5 w-5 text-white" />
+                                        </div>
+                                        <div>
+                                            <h2 class="text-xl font-bold text-white">Wi-Fi Terms of Service</h2>
+                                            <p class="mt-1 text-sm text-orange-100">Frank Meat & Taps</p>
+                                        </div>
+                                    </div>
+                                    <button
+                                        type="button"
+                                        @click="closeTermsModal"
+                                        class="rounded-lg p-1.5 text-white/80 transition-colors hover:bg-white/20 hover:text-white"
+                                    >
+                                        <X class="h-5 w-5" />
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- Content -->
+                            <div class="custom-scrollbar max-h-[calc(85vh-180px)] overflow-y-auto px-6 py-6">
+                                <div class="space-y-6 text-sm">
+                                    <!-- Introduction -->
+                                    <div class="rounded-xl bg-orange-50 dark:bg-orange-950/30 p-4 border border-orange-200 dark:border-orange-800">
+                                        <div class="flex items-start gap-3">
+                                            <div class="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-orange-100 dark:bg-orange-900/50">
+                                                <Info class="h-4 w-4 text-orange-600" />
+                                            </div>
+                                            <p class="text-xs leading-relaxed text-muted-foreground">
+                                                By accessing this wireless network, you acknowledge and agree to the following terms and conditions.
+                                            </p>
+                                        </div>
+                                    </div>
+
+                                    <!-- Terms List -->
+                                    <div class="space-y-5">
+                                        <!-- 1. Eligibility -->
+                                        <div class="group space-y-2">
+                                            <div class="flex items-center gap-2">
+                                                <div class="flex h-6 w-6 items-center justify-center rounded-md bg-orange-100 dark:bg-orange-900/50 text-xs font-bold text-orange-600">
+                                                    1
+                                                </div>
+                                                <h3 class="font-semibold text-foreground">Eligibility</h3>
+                                            </div>
+                                            <p class="pl-8 text-xs leading-relaxed text-muted-foreground">
+                                                You confirm that you are of legal age to use this service.
+                                            </p>
+                                        </div>
+
+                                        <!-- 2. Acceptable Use -->
+                                        <div class="group space-y-2">
+                                            <div class="flex items-center gap-2">
+                                                <div class="flex h-6 w-6 items-center justify-center rounded-md bg-orange-100 dark:bg-orange-900/50 text-xs font-bold text-orange-600">
+                                                    2
+                                                </div>
+                                                <h3 class="font-semibold text-foreground">Acceptable Use</h3>
+                                            </div>
+                                            <p class="pl-8 text-xs leading-relaxed text-muted-foreground">
+                                                You agree not to use the wireless network for any purpose that is unlawful, illegal, or prohibited. You take full responsibility for your actions while connected.
+                                            </p>
+                                        </div>
+
+                                        <!-- 3. No Warranty -->
+                                        <div class="group space-y-2">
+                                            <div class="flex items-center gap-2">
+                                                <div class="flex h-6 w-6 items-center justify-center rounded-md bg-orange-100 dark:bg-orange-900/50 text-xs font-bold text-orange-600">
+                                                    3
+                                                </div>
+                                                <h3 class="font-semibold text-foreground">No Warranty</h3>
+                                            </div>
+                                            <p class="pl-8 text-xs leading-relaxed text-muted-foreground">
+                                                The wireless network is provided "as is" without warranties of any kind, either expressed or implied. We do not guarantee availability, security, or performance.
+                                            </p>
+                                        </div>
+
+                                        <!-- 4. Data Collection & Marketing -->
+                                        <div class="group space-y-2">
+                                            <div class="flex items-center gap-2">
+                                                <div class="flex h-6 w-6 items-center justify-center rounded-md bg-orange-100 dark:bg-orange-900/50 text-xs font-bold text-orange-600">
+                                                    4
+                                                </div>
+                                                <h3 class="font-semibold text-foreground">Data Collection & Marketing</h3>
+                                            </div>
+                                            <div class="pl-8 space-y-3">
+                                                <div class="rounded-lg bg-blue-50 dark:bg-blue-950/30 p-3 border border-blue-200 dark:border-blue-800">
+                                                    <div class="flex items-start gap-2">
+                                                        <Database class="h-3.5 w-3.5 text-blue-600 mt-0.5 shrink-0" />
+                                                        <p class="text-xs leading-relaxed text-muted-foreground">
+                                                            By using this Wi-Fi service, you consent to the collection of certain personal information (such as your name, email address, and phone number).
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                                <ul class="space-y-2 text-xs leading-relaxed text-muted-foreground">
+                                                    <li class="flex items-start gap-2">
+                                                        <Check class="h-3.5 w-3.5 text-orange-600 mt-0.5 shrink-0" />
+                                                        <span>This information may be used for marketing purposes, including promotional messages, special offers, and service updates.</span>
+                                                    </li>
+                                                    <li class="flex items-start gap-2">
+                                                        <Check class="h-3.5 w-3.5 text-orange-600 mt-0.5 shrink-0" />
+                                                        <span>We will not sell or share your data with unauthorised third parties.</span>
+                                                    </li>
+                                                    <li class="flex items-start gap-2">
+                                                        <Check class="h-3.5 w-3.5 text-orange-600 mt-0.5 shrink-0" />
+                                                        <span>You may opt out of marketing communications at any time by following the unsubscribe instructions provided in our messages.</span>
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                        </div>
+
+                                        <!-- 5. Limitation of Liability -->
+                                        <div class="group space-y-2">
+                                            <div class="flex items-center gap-2">
+                                                <div class="flex h-6 w-6 items-center justify-center rounded-md bg-orange-100 dark:bg-orange-900/50 text-xs font-bold text-orange-600">
+                                                    5
+                                                </div>
+                                                <h3 class="font-semibold text-foreground">Limitation of Liability</h3>
+                                            </div>
+                                            <div class="pl-8 rounded-lg bg-amber-50 dark:bg-amber-950/30 p-3 border border-amber-200 dark:border-amber-800">
+                                                <div class="flex items-start gap-2">
+                                                    <AlertCircle class="h-3.5 w-3.5 text-amber-600 mt-0.5 shrink-0" />
+                                                    <p class="text-xs leading-relaxed text-muted-foreground">
+                                                        We are not liable for any damages, losses, or issues arising from your use of the wireless network.
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Footer -->
+                            <div class="sticky bottom-0 z-10 border-t border-border bg-white dark:bg-gray-900 px-6 py-4">
+                                <div class="flex items-center justify-between gap-4">
+                                    <p class="text-[10px] text-muted-foreground">
+                                        Last updated: October 11, 2025
+                                    </p>
+                                    <div class="flex gap-3">
+                                        <Button
+                                            type="button"
+                                            variant="outline"
+                                            size="sm"
+                                            @click="closeTermsModal"
+                                            class="text-xs"
+                                        >
+                                            Close
+                                        </Button>
+                                        <Button
+                                            type="button"
+                                            size="sm"
+                                            @click="acceptTerms"
+                                            class="text-xs"
+                                        >
+                                            <Check class="mr-1.5 h-3.5 w-3.5" />
+                                            Accept Terms
+                                        </Button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </Transition>
+                </div>
+            </Transition>
+        </Teleport>
     </AuthBase>
 </template>
 

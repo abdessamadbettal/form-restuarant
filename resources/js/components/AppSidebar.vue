@@ -28,12 +28,12 @@ const mainNavItems: NavItem[] = [
 const footerNavItems: NavItem[] = [
     {
         title: 'Instagram',
-        href: 'https://www.instagram.com/your_restaurant_handle',
+        href: 'https://www.instagram.com/frankmeatdxb',
         icon: Folder,
     },
     {
         title: 'Facebook',
-        href: 'https://www.facebook.com/your_restaurant_handle',
+        href: 'https://www.facebook.com/profile.php?id=61555282791215',
         icon: BookOpen,
     },
 ];

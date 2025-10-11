@@ -43,6 +43,7 @@ class RegisteredUserController extends Controller
             'phone' => $request->phone,
             'country' => $request->country,
             'password' => Hash::make(uniqid()), // Generate random password since it's not needed
+            'role' => 'user',
         ]);
 
         event(new Registered($user));

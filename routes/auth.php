@@ -36,9 +36,6 @@ Route::middleware('guest')->group(function () {
         ->name('password.store');
 });
 
-Route::get('thanks', function () {
-    return Inertia::render('auth/Thanks');
-})->name('register.thanks');
 
 Route::middleware('auth')->group(function () {
     Route::get('verify-email', EmailVerificationPromptController::class)
