@@ -8,7 +8,7 @@ import { Label } from '@/components/ui/label';
 import AuthBase from '@/layouts/AuthLayout.vue';
 import { login } from '@/routes';
 import { Form, Head } from '@inertiajs/vue3';
-import { LoaderCircle, Search, ChevronDown, Check, User, Mail, Phone, Globe, Sparkles, Info, Shield, Database, AlertCircle, X, Lock } from 'lucide-vue-next';
+import { LoaderCircle, Search, ChevronDown, Check, User, Mail, Phone, Globe, Sparkles, Info, Shield, X, Lock } from 'lucide-vue-next';
 import { ref, computed, onMounted, onBeforeUnmount } from 'vue';
 
 interface Country {
@@ -32,7 +32,6 @@ const formProgress = ref(0);
 const showTermsModal = ref(false);
 const acceptedTerms = ref(false);
 
-// Fetch countries from REST Countries API
 onMounted(async () => {
     try {
         const response = await fetch('https://restcountries.com/v3.1/all?fields=name,cca2,flags');
@@ -55,7 +54,6 @@ onBeforeUnmount(() => {
 
 const filteredCountries = computed(() => {
     if (!searchQuery.value) return countries.value;
-
     return countries.value.filter(country =>
         country.name.common.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
         country.cca2.toLowerCase().includes(searchQuery.value.toLowerCase())
@@ -71,7 +69,6 @@ const selectCountry = (country: Country) => {
         countryInputRef.value.value = country.cca2;
         countryInputRef.value.dispatchEvent(new Event('input', { bubbles: true }));
     }
-
     updateProgress();
 };
 
@@ -122,328 +119,237 @@ const acceptTerms = () => {
 </script>
 
 <template>
-    <AuthBase
-        title="Frank Meat & Taps - Wi-Fi Terms of Service"
-        description="Sign up for exclusive offers and updates"
-    >
+    <AuthBase title="Frank Meat & Taps" description="Sign up for exclusive offers and Wi-Fi access">
+
         <Head title="Register" />
 
-        <Form
-            v-bind="RegisteredUserController.store.form()"
-            v-slot="{ errors, processing, data }"
-            class="space-y-4"
-        >
+        <Form v-bind="RegisteredUserController.store.form()" v-slot="{ errors, processing, data }" class="space-y-5">
             <!-- Progress Bar -->
-            <div class="space-y-1.5">
-                <div class="flex items-center justify-between text-xs">
-                    <span class="text-xs text-muted-foreground">Profile completion</span>
-                    <span class="text-xs font-medium text-orange-600">{{ Math.round(formProgress) }}%</span>
+            <div class="space-y-2">
+                <div class="flex items-center justify-between">
+                    <span class="text-xs font-medium text-gray-400">Complete your profile</span>
+                    <span class="text-xs font-bold text-red-500">{{ Math.round(formProgress) }}%</span>
                 </div>
-                <div class="h-1.5 w-full overflow-hidden rounded-full bg-orange-100 dark:bg-orange-900/30">
-                    <div
-                        class="h-full bg-gradient-to-r from-orange-500 to-amber-500 transition-all duration-500 ease-out"
-                        :style="{ width: `${formProgress}%` }"
-                    ></div>
+                <div class="h-2 w-full overflow-hidden rounded-full bg-gray-800/50 ring-1 ring-gray-800">
+                    <div class="h-full bg-gradient-to-r from-red-600 via-red-500 to-red-600 transition-all duration-500 ease-out shadow-lg shadow-red-500/50"
+                        :style="{ width: `${formProgress}%` }"></div>
                 </div>
             </div>
 
-            <!-- Country Field with Custom Select -->
-            <div class="space-y-1.5">
-                <Label for="country" class="flex items-center gap-1.5 text-xs">
-                    <Globe class="h-3 w-3 text-orange-600" />
-                    Country
-                    <span class="text-destructive">*</span>
-                </Label>
-
-                <div class="country-select-wrapper relative">
-                    <input
-                        ref="countryInputRef"
-                        type="hidden"
-                        name="country"
-                        required
-                        :value="selectedCountry?.cca2 || ''"
-                    />
-
-                    <button
-                        type="button"
-                        @click="toggleDropdown"
-                        :tabindex="4"
-                        class="flex h-10 w-full items-center justify-between rounded-lg border border-input bg-background px-3 py-1.5 text-sm ring-offset-background transition-all hover:border-orange-300 dark:hover:border-orange-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-500 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-                        :class="{ 'ring-2 ring-orange-500 ring-offset-2': isDropdownOpen }"
-                    >
-                        <span class="flex items-center gap-2">
-                            <template v-if="selectedCountry">
-                                <img
-                                    :src="selectedCountry.flags.svg"
-                                    :alt="selectedCountry.name.common"
-                                    class="h-4 w-5 rounded object-cover shadow-sm"
-                                />
-                                <span class="truncate text-xs">{{ selectedCountry.name.common }}</span>
-                            </template>
-                            <template v-else>
-                                <span class="text-xs text-muted-foreground">
-                                    {{ isLoadingCountries ? 'Loading countries...' : 'Select country' }}
-                                </span>
-                            </template>
-                        </span>
-                        <ChevronDown
-                            class="h-3 w-3 opacity-50 transition-transform duration-200"
-                            :class="{ 'rotate-180': isDropdownOpen }"
-                        />
-                    </button>
-
-                    <Transition
-                        enter-active-class="transition duration-200 ease-out"
-                        enter-from-class="opacity-0 scale-95"
-                        enter-to-class="opacity-100 scale-100"
-                        leave-active-class="transition duration-150 ease-in"
-                        leave-from-class="opacity-100 scale-100"
-                        leave-to-class="opacity-0 scale-95"
-                    >
-                        <div
-                            v-if="isDropdownOpen"
-                            class="absolute z-50 mt-1.5 w-full rounded-lg border border-orange-200 dark:border-orange-800 bg-white dark:bg-gray-900 shadow-lg shadow-orange-500/10"
-                        >
-                            <div class="border-b border-orange-100 dark:border-orange-900 p-2">
-                                <div class="relative">
-                                    <Search class="absolute left-2.5 top-1/2 h-3 w-3 -translate-y-1/2 text-muted-foreground" />
-                                    <input
-                                        v-model="searchQuery"
-                                        type="text"
-                                        placeholder="Search countries..."
-                                        class="h-8 w-full rounded-md border border-input bg-background pl-7 pr-2 text-xs ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-500 focus-visible:ring-offset-1"
-                                        @click.stop
-                                    />
-                                </div>
-                            </div>
-
-                            <div class="custom-scrollbar max-h-[240px] overflow-y-auto p-2">
-                                <template v-if="isLoadingCountries">
-                                    <div class="flex items-center justify-center py-6">
-                                        <LoaderCircle class="h-5 w-5 animate-spin text-orange-600" />
-                                    </div>
-                                </template>
-
-                                <template v-else-if="filteredCountries.length === 0">
-                                    <div class="py-6 text-center text-xs text-muted-foreground">
-                                        No countries found
-                                    </div>
-                                </template>
-
-                                <template v-else>
-                                    <button
-                                        v-for="country in filteredCountries"
-                                        :key="country.cca2"
-                                        type="button"
-                                        @click="selectCountry(country)"
-                                        class="flex w-full items-center gap-2.5 rounded-md px-2.5 py-2 text-xs transition-colors hover:bg-orange-50 dark:hover:bg-orange-950/30"
-                                        :class="{ 'bg-orange-50 dark:bg-orange-950/20 ring-1 ring-orange-200 dark:ring-orange-800': selectedCountry?.cca2 === country.cca2 }"
-                                    >
-                                        <img
-                                            :src="country.flags.svg"
-                                            :alt="country.name.common"
-                                            class="h-3.5 w-5 rounded object-cover shadow-sm"
-                                        />
-                                        <span class="flex-1 truncate text-left">{{ country.name.common }}</span>
-                                        <Check
-                                            v-if="selectedCountry?.cca2 === country.cca2"
-                                            class="h-3 w-3 text-orange-600"
-                                        />
-                                    </button>
-                                </template>
-                            </div>
-                        </div>
-                    </Transition>
-                </div>
-
-                <InputError :message="errors.country" />
-            </div>
 
             <!-- Name Field -->
-            <div class="group space-y-1.5">
-                <Label for="name" class="flex items-center gap-1.5 text-xs">
-                    <User class="h-3 w-3 text-orange-600" />
-                    Full Name
-                    <span class="text-destructive">*</span>
+            <div class="group space-y-2">
+                <Label for="name" class="flex items-center gap-2">
+                    <User class="h-4 w-4 text-red-500" />
+                    <span>Full Name</span>
+                    <span class="text-red-500">*</span>
                 </Label>
                 <div class="relative">
-                    <Input
-                        id="name"
-                        type="text"
-                        required
-                        autofocus
-                        :tabindex="1"
-                        autocomplete="name"
-                        name="name"
-                        placeholder="John Doe"
-                        class="h-10 pl-3 pr-8 text-sm transition-all focus:ring-2 focus:ring-orange-500 group-hover:border-orange-300"
-                        @input="updateProgress"
-                    />
-                    <div class="absolute right-2.5 top-1/2 -translate-y-1/2 text-orange-400 opacity-0 transition-opacity group-hover:opacity-100">
-                        <Sparkles class="h-3 w-3" />
+                    <Input id="name" type="text" required autofocus :tabindex="1" autocomplete="name" name="name"
+                        placeholder="Enter your full name" class="peer" @input="updateProgress" />
+                    <div
+                        class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-red-500 opacity-0 transition-opacity peer-focus:opacity-100">
+                        <Sparkles class="h-4 w-4" />
                     </div>
                 </div>
                 <InputError :message="errors.name" />
             </div>
 
+            <div class="grid grid-cols-1 gap-5 md:grid-cols-2">
+
+                <!-- Country Field -->
+                <div class="space-y-2">
+                    <Label for="country" class="flex items-center gap-2">
+                        <Globe class="h-4 w-4 text-red-500" />
+                        <span>Country</span>
+                        <span class="text-red-500">*</span>
+                    </Label>
+
+                    <div class="country-select-wrapper relative">
+                        <input ref="countryInputRef" type="hidden" name="country" required
+                            :value="selectedCountry?.cca2 || ''" />
+
+                        <button type="button" @click="toggleDropdown" :tabindex="4"
+                            class="flex h-12 w-full items-center justify-between rounded-xl border border-gray-800 bg-gray-900/50 px-4 py-3 text-sm ring-offset-black transition-all hover:border-red-500/50 hover:bg-gray-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-500 focus-visible:ring-offset-2 focus-visible:ring-offset-black"
+                            :class="{ 'ring-2 ring-red-500 ring-offset-2 ring-offset-black border-red-500': isDropdownOpen }">
+                            <span class="flex items-center gap-3">
+                                <template v-if="selectedCountry">
+                                    <img :src="selectedCountry.flags.svg" :alt="selectedCountry.name.common"
+                                        class="h-5 w-7 rounded object-cover shadow-md ring-1 ring-gray-700" />
+                                    <span class="truncate font-medium text-white">{{ selectedCountry.name.common
+                                        }}</span>
+                                </template>
+                                <template v-else>
+                                    <span class="text-gray-500">
+                                        {{ isLoadingCountries ? 'Loading countries...' : 'your country' }}
+                                    </span>
+                                </template>
+                            </span>
+                            <ChevronDown class="h-4 w-4 text-gray-500 transition-transform duration-200"
+                                :class="{ 'rotate-180 text-red-500': isDropdownOpen }" />
+                        </button>
+
+                        <Transition enter-active-class="transition duration-200 ease-out"
+                            enter-from-class="opacity-0 scale-95" enter-to-class="opacity-100 scale-100"
+                            leave-active-class="transition duration-150 ease-in"
+                            leave-from-class="opacity-100 scale-100" leave-to-class="opacity-0 scale-95">
+                            <div v-if="isDropdownOpen"
+                                class="absolute z-50 mt-2 w-full rounded-xl border border-gray-800 bg-gray-900 shadow-2xl shadow-black/50 ring-1 ring-red-500/20">
+                                <div class="border-b border-gray-800 p-3">
+                                    <div class="relative">
+                                        <Search
+                                            class="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-500" />
+                                        <input v-model="searchQuery" type="text" placeholder="Search countries..."
+                                            class="h-10 w-full rounded-lg border border-gray-800 bg-black/50 pl-10 pr-3 text-sm text-white placeholder-gray-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-500"
+                                            @click.stop />
+                                    </div>
+                                </div>
+
+                                <div class="custom-scrollbar max-h-[280px] overflow-y-auto p-2">
+                                    <template v-if="isLoadingCountries">
+                                        <div class="flex items-center justify-center py-8">
+                                            <LoaderCircle class="h-6 w-6 animate-spin text-red-500" />
+                                        </div>
+                                    </template>
+
+                                    <template v-else-if="filteredCountries.length === 0">
+                                        <div class="py-8 text-center text-sm text-gray-500">
+                                            No countries found
+                                        </div>
+                                    </template>
+
+                                    <template v-else>
+                                        <button v-for="country in filteredCountries" :key="country.cca2" type="button"
+                                            @click="selectCountry(country)"
+                                            class="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm transition-colors hover:bg-red-950/30"
+                                            :class="{ 'bg-red-950/50 ring-1 ring-red-500/50': selectedCountry?.cca2 === country.cca2 }">
+                                            <img :src="country.flags.svg" :alt="country.name.common"
+                                                class="h-4 w-6 rounded object-cover shadow-sm ring-1 ring-gray-700" />
+                                            <span class="flex-1 truncate text-left text-white">{{ country.name.common
+                                                }}</span>
+                                            <Check v-if="selectedCountry?.cca2 === country.cca2"
+                                                class="h-4 w-4 text-red-500" />
+                                        </button>
+                                    </template>
+                                </div>
+                            </div>
+                        </Transition>
+                    </div>
+
+                    <InputError :message="errors.country" />
+                </div>
+                <!-- Phone Field -->
+                <div class="group space-y-2 ">
+                    <Label for="phone" class="flex items-center gap-2">
+                        <Phone class="h-4 w-4 text-red-500" />
+                        <span>Phone Number</span>
+                        <span class="text-red-500">*</span>
+                    </Label>
+                    <div class="relative">
+                        <Input id="phone" type="tel" required :tabindex="3" autocomplete="tel" name="phone"
+                            placeholder="+971 50 123 4567" class="peer" @input="updateProgress" />
+                        <div
+                            class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-red-500 opacity-0 transition-opacity peer-focus:opacity-100">
+                            <Sparkles class="h-4 w-4" />
+                        </div>
+                    </div>
+                    <InputError :message="errors.phone" />
+                </div>
+            </div>
+
             <!-- Email Field -->
-            <div class="group space-y-1.5">
-                <Label for="email" class="flex items-center gap-1.5 text-xs">
-                    <Mail class="h-3 w-3 text-orange-600" />
-                    Email Address
-                    <span class="text-destructive">*</span>
+            <div class="group space-y-2">
+                <Label for="email" class="flex items-center gap-2">
+                    <Mail class="h-4 w-4 text-red-500" />
+                    <span>Email Address</span>
+                    <span class="text-red-500">*</span>
                 </Label>
                 <div class="relative">
-                    <Input
-                        id="email"
-                        type="email"
-                        required
-                        :tabindex="2"
-                        autocomplete="email"
-                        name="email"
-                        placeholder="john@example.com"
-                        class="h-10 pl-3 pr-8 text-sm transition-all focus:ring-2 focus:ring-orange-500 group-hover:border-orange-300"
-                        @input="updateProgress"
-                    />
-                    <div class="absolute right-2.5 top-1/2 -translate-y-1/2 text-orange-400 opacity-0 transition-opacity group-hover:opacity-100">
-                        <Sparkles class="h-3 w-3" />
+                    <Input id="email" type="email" required :tabindex="2" autocomplete="email" name="email"
+                        placeholder="your@email.com" class="peer" @input="updateProgress" />
+                    <div
+                        class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-red-500 opacity-0 transition-opacity peer-focus:opacity-100">
+                        <Sparkles class="h-4 w-4" />
                     </div>
                 </div>
                 <InputError :message="errors.email" />
             </div>
 
-            <!-- Phone Field -->
-            <div class="group space-y-1.5">
-                <Label for="phone" class="flex items-center gap-1.5 text-xs">
-                    <Phone class="h-3 w-3 text-orange-600" />
-                    Phone Number
-                    <span class="text-destructive">*</span>
-                </Label>
-                <div class="relative">
-                    <Input
-                        id="phone"
-                        type="tel"
-                        required
-                        :tabindex="3"
-                        autocomplete="tel"
-                        name="phone"
-                        placeholder="+1 (555) 123-4567"
-                        class="h-10 pl-3 pr-8 text-sm transition-all focus:ring-2 focus:ring-orange-500 group-hover:border-orange-300"
-                        @input="updateProgress"
-                    />
-                    <div class="absolute right-2.5 top-1/2 -translate-y-1/2 text-orange-400 opacity-0 transition-opacity group-hover:opacity-100">
-                        <Sparkles class="h-3 w-3" />
-                    </div>
-                </div>
-                <InputError :message="errors.phone" />
-            </div>
 
-            <!-- Terms of Service -->
+
+            <!-- Terms -->
             <div class="space-y-2">
-                <div class="flex items-start gap-2.5">
-                    <input
-                        id="terms"
-                        type="checkbox"
-                        v-model="acceptedTerms"
-                        @change="updateProgress"
-                        :tabindex="5"
+                <div class="flex items-start gap-3 rounded-lg border border-gray-800 bg-gray-900/30 p-4">
+                    <input id="terms" type="checkbox" v-model="acceptedTerms" @change="updateProgress" :tabindex="5"
                         required
-                        class="mt-0.5 h-4 w-4 rounded border-orange-300 text-orange-600 focus:ring-2 focus:ring-orange-500 focus:ring-offset-1"
-                    />
-                    <label for="terms" class="flex-1 text-[11px] leading-relaxed text-muted-foreground">
+                        class="mt-0.5 h-5 w-5 rounded border-gray-700 bg-gray-800 text-red-600 focus:ring-2 focus:ring-red-500 focus:ring-offset-2 focus:ring-offset-black"
+                        style="accent-color: #b01218" />
+                    <label for="terms" class="flex-1 text-sm leading-relaxed text-gray-400">
                         I agree to the
-                        <button
-                            type="button"
-                            @click="openTermsModal"
-                            class="font-medium text-orange-600 hover:text-orange-700 dark:text-orange-400 dark:hover:text-orange-300 underline decoration-orange-300 underline-offset-2 transition-colors"
-                        >
+                        <button type="button" @click="openTermsModal"
+                            class="font-semibold text-red-500 hover:text-red-400 underline decoration-red-500/30 underline-offset-2 transition-colors">
                             Wi-Fi Terms of Service
                         </button>
                         and consent to receive promotional emails
-                        <span class="text-destructive">*</span>
+                        <span class="text-red-500">*</span>
                     </label>
                 </div>
                 <InputError :message="errors.terms" />
             </div>
 
             <!-- Submit Button -->
-            <Button
-                type="submit"
-                size="sm"
-                class="mt-2 w-full text-sm"
-                :tabindex="6"
-                :disabled="processing || !acceptedTerms"
-                variant="default"
-                data-test="register-user-button"
-            >
-                <LoaderCircle
-                    v-if="processing"
-                    class="mr-1.5 h-3.5 w-3.5 animate-spin"
-                />
-                {{ processing ? 'Creating account...' : '🍽️ Join Our Family' }}
+            <Button type="submit"
+                class="h-12 w-full text-base font-semibold bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 shadow-lg shadow-red-500/30 hover:shadow-red-500/50 transition-all"
+                :tabindex="6" :disabled="processing || !acceptedTerms" data-test="register-user-button">
+                <LoaderCircle v-if="processing" class="mr-2 h-5 w-5 animate-spin" />
+                {{ processing ? 'Creating account...' : '🔥 Join Frank Meat & Taps' }}
             </Button>
 
-            <p class="text-center text-[10px] leading-relaxed text-muted-foreground">
+            <!-- <p class="text-center text-xs leading-relaxed text-gray-500">
                 By signing up, you agree to receive promotional emails and updates from us.
-            </p>
+            </p> -->
 
-             <!-- Admin Login Link -->
-            <div class="pt-3 border-t border-border">
-                <div class="flex items-center justify-center gap-1.5 text-xs text-muted-foreground">
-                    <Lock class="h-3 w-3" />
+            <!-- Admin Login Link -->
+            <div class="pt-4 border-t border-gray-800">
+                <div class="flex items-center justify-center gap-2 text-sm text-gray-500">
+                    <Lock class="h-4 w-4" />
                     <span>Admin?</span>
-                    <TextLink :href="login()" class="text-xs font-medium">
+                    <TextLink :href="login()" class="font-medium text-red-500 hover:text-red-400">
                         Login here
                     </TextLink>
                 </div>
             </div>
         </Form>
 
-        <!-- Terms of Service Modal -->
+        <!-- Terms Modal -->
         <Teleport to="body">
-            <Transition
-                enter-active-class="transition duration-200 ease-out"
-                enter-from-class="opacity-0"
-                enter-to-class="opacity-100"
-                leave-active-class="transition duration-150 ease-in"
-                leave-from-class="opacity-100"
-                leave-to-class="opacity-0"
-            >
-                <div
-                    v-if="showTermsModal"
-                    class="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4"
-                    @click="closeTermsModal"
-                >
-                    <Transition
-                        enter-active-class="transition duration-300 ease-out"
-                        enter-from-class="opacity-0 scale-95 translate-y-4"
-                        enter-to-class="opacity-100 scale-100 translate-y-0"
-                        leave-active-class="transition duration-200 ease-in"
-                        leave-from-class="opacity-100 scale-100 translate-y-0"
-                        leave-to-class="opacity-0 scale-95 translate-y-4"
-                    >
-                        <div
-                            v-if="showTermsModal"
-                            @click.stop
-                            class="relative w-full max-w-2xl max-h-[85vh] bg-white dark:bg-gray-900 rounded-2xl shadow-2xl shadow-orange-500/20 overflow-hidden"
-                        >
+            <Transition enter-active-class="transition duration-200 ease-out" enter-from-class="opacity-0"
+                enter-to-class="opacity-100" leave-active-class="transition duration-150 ease-in"
+                leave-from-class="opacity-100" leave-to-class="opacity-0">
+                <div v-if="showTermsModal"
+                    class="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4"
+                    @click="closeTermsModal">
+                    <Transition enter-active-class="transition duration-200 ease-out delay-100"
+                        enter-from-class="opacity-0 scale-95" enter-to-class="opacity-100 scale-100"
+                        leave-active-class="transition duration-150 ease-in" leave-from-class="opacity-100 scale-100"
+                        leave-to-class="opacity-0 scale-95">
+                        <div v-if="showTermsModal" @click.stop
+                            class="relative w-full max-w-2xl max-h-[85vh] bg-gray-900 rounded-2xl shadow-2xl overflow-hidden ring-1 ring-gray-800">
                             <!-- Header -->
-                            <div class="sticky top-0 z-10 bg-gradient-to-br from-orange-500 to-amber-600 px-6 py-5">
+                            <div class="sticky top-0 z-10 bg-gradient-to-r from-red-600 to-red-700 px-6 py-5">
                                 <div class="flex items-start justify-between">
                                     <div class="flex items-start gap-3">
-                                        <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-white/20 backdrop-blur-sm">
-                                            <Shield class="h-5 w-5 text-white" />
+                                        <div
+                                            class="flex h-12 w-12 items-center justify-center rounded-xl bg-white/10 backdrop-blur-sm">
+                                            <Shield class="h-6 w-6 text-white" />
                                         </div>
                                         <div>
                                             <h2 class="text-xl font-bold text-white">Wi-Fi Terms of Service</h2>
-                                            <p class="mt-1 text-sm text-orange-100">Frank Meat & Taps</p>
+                                            <p class="mt-1 text-sm text-red-100">Frank Meat & Taps - Dubai</p>
                                         </div>
                                     </div>
-                                    <button
-                                        type="button"
-                                        @click="closeTermsModal"
-                                        class="rounded-lg p-1.5 text-white/80 transition-colors hover:bg-white/20 hover:text-white"
-                                    >
+                                    <button type="button" @click="closeTermsModal"
+                                        class="rounded-lg p-2 text-white/80 hover:bg-white/20 hover:text-white transition-colors">
                                         <X class="h-5 w-5" />
                                     </button>
                                 </div>
@@ -451,141 +357,68 @@ const acceptTerms = () => {
 
                             <!-- Content -->
                             <div class="custom-scrollbar max-h-[calc(85vh-180px)] overflow-y-auto px-6 py-6">
-                                <div class="space-y-6 text-sm">
-                                    <!-- Introduction -->
-                                    <div class="rounded-xl bg-orange-50 dark:bg-orange-950/30 p-4 border border-orange-200 dark:border-orange-800">
+                                <div class="space-y-6">
+                                    <div class="rounded-xl bg-red-950/30 p-4 border border-red-900/50">
                                         <div class="flex items-start gap-3">
-                                            <div class="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-orange-100 dark:bg-orange-900/50">
-                                                <Info class="h-4 w-4 text-orange-600" />
-                                            </div>
-                                            <p class="text-xs leading-relaxed text-muted-foreground">
-                                                By accessing this wireless network, you acknowledge and agree to the following terms and conditions.
+                                            <Info class="h-5 w-5 text-red-500 mt-0.5 flex-shrink-0" />
+                                            <p class="text-sm leading-relaxed text-gray-400">
+                                                By accessing this wireless network, you acknowledge and agree to the
+                                                following terms and conditions.
                                             </p>
                                         </div>
                                     </div>
 
-                                    <!-- Terms List -->
                                     <div class="space-y-5">
-                                        <!-- 1. Eligibility -->
-                                        <div class="group space-y-2">
-                                            <div class="flex items-center gap-2">
-                                                <div class="flex h-6 w-6 items-center justify-center rounded-md bg-orange-100 dark:bg-orange-900/50 text-xs font-bold text-orange-600">
-                                                    1
-                                                </div>
-                                                <h3 class="font-semibold text-foreground">Eligibility</h3>
+                                        <div class="space-y-3">
+                                            <div class="flex items-center gap-3">
+                                                <div
+                                                    class="flex h-8 w-8 items-center justify-center rounded-lg bg-red-950/50 text-sm font-bold text-red-500 ring-1 ring-red-900/50">
+                                                    1</div>
+                                                <h3 class="font-semibold text-white">Eligibility</h3>
                                             </div>
-                                            <p class="pl-8 text-xs leading-relaxed text-muted-foreground">
-                                                You confirm that you are of legal age to use this service.
-                                            </p>
+                                            <p class="pl-11 text-sm text-gray-400">You confirm that you are of legal age
+                                                to use this service and agree to comply with all applicable laws.</p>
                                         </div>
 
-                                        <!-- 2. Acceptable Use -->
-                                        <div class="group space-y-2">
-                                            <div class="flex items-center gap-2">
-                                                <div class="flex h-6 w-6 items-center justify-center rounded-md bg-orange-100 dark:bg-orange-900/50 text-xs font-bold text-orange-600">
-                                                    2
-                                                </div>
-                                                <h3 class="font-semibold text-foreground">Acceptable Use</h3>
+                                        <div class="space-y-3">
+                                            <div class="flex items-center gap-3">
+                                                <div
+                                                    class="flex h-8 w-8 items-center justify-center rounded-lg bg-red-950/50 text-sm font-bold text-red-500 ring-1 ring-red-900/50">
+                                                    2</div>
+                                                <h3 class="font-semibold text-white">Acceptable Use</h3>
                                             </div>
-                                            <p class="pl-8 text-xs leading-relaxed text-muted-foreground">
-                                                You agree not to use the wireless network for any purpose that is unlawful, illegal, or prohibited. You take full responsibility for your actions while connected.
-                                            </p>
+                                            <p class="pl-11 text-sm text-gray-400">You agree not to use the network for
+                                                unlawful purposes or any activity that may harm others.</p>
                                         </div>
 
-                                        <!-- 3. No Warranty -->
-                                        <div class="group space-y-2">
-                                            <div class="flex items-center gap-2">
-                                                <div class="flex h-6 w-6 items-center justify-center rounded-md bg-orange-100 dark:bg-orange-900/50 text-xs font-bold text-orange-600">
-                                                    3
-                                                </div>
-                                                <h3 class="font-semibold text-foreground">No Warranty</h3>
+                                        <div class="space-y-3">
+                                            <div class="flex items-center gap-3">
+                                                <div
+                                                    class="flex h-8 w-8 items-center justify-center rounded-lg bg-red-950/50 text-sm font-bold text-red-500 ring-1 ring-red-900/50">
+                                                    3</div>
+                                                <h3 class="font-semibold text-white">Data Collection</h3>
                                             </div>
-                                            <p class="pl-8 text-xs leading-relaxed text-muted-foreground">
-                                                The wireless network is provided "as is" without warranties of any kind, either expressed or implied. We do not guarantee availability, security, or performance.
-                                            </p>
-                                        </div>
-
-                                        <!-- 4. Data Collection & Marketing -->
-                                        <div class="group space-y-2">
-                                            <div class="flex items-center gap-2">
-                                                <div class="flex h-6 w-6 items-center justify-center rounded-md bg-orange-100 dark:bg-orange-900/50 text-xs font-bold text-orange-600">
-                                                    4
-                                                </div>
-                                                <h3 class="font-semibold text-foreground">Data Collection & Marketing</h3>
-                                            </div>
-                                            <div class="pl-8 space-y-3">
-                                                <div class="rounded-lg bg-blue-50 dark:bg-blue-950/30 p-3 border border-blue-200 dark:border-blue-800">
-                                                    <div class="flex items-start gap-2">
-                                                        <Database class="h-3.5 w-3.5 text-blue-600 mt-0.5 shrink-0" />
-                                                        <p class="text-xs leading-relaxed text-muted-foreground">
-                                                            By using this Wi-Fi service, you consent to the collection of certain personal information (such as your name, email address, and phone number).
-                                                        </p>
-                                                    </div>
-                                                </div>
-                                                <ul class="space-y-2 text-xs leading-relaxed text-muted-foreground">
-                                                    <li class="flex items-start gap-2">
-                                                        <Check class="h-3.5 w-3.5 text-orange-600 mt-0.5 shrink-0" />
-                                                        <span>This information may be used for marketing purposes, including promotional messages, special offers, and service updates.</span>
-                                                    </li>
-                                                    <li class="flex items-start gap-2">
-                                                        <Check class="h-3.5 w-3.5 text-orange-600 mt-0.5 shrink-0" />
-                                                        <span>We will not sell or share your data with unauthorised third parties.</span>
-                                                    </li>
-                                                    <li class="flex items-start gap-2">
-                                                        <Check class="h-3.5 w-3.5 text-orange-600 mt-0.5 shrink-0" />
-                                                        <span>You may opt out of marketing communications at any time by following the unsubscribe instructions provided in our messages.</span>
-                                                    </li>
-                                                </ul>
-                                            </div>
-                                        </div>
-
-                                        <!-- 5. Limitation of Liability -->
-                                        <div class="group space-y-2">
-                                            <div class="flex items-center gap-2">
-                                                <div class="flex h-6 w-6 items-center justify-center rounded-md bg-orange-100 dark:bg-orange-900/50 text-xs font-bold text-orange-600">
-                                                    5
-                                                </div>
-                                                <h3 class="font-semibold text-foreground">Limitation of Liability</h3>
-                                            </div>
-                                            <div class="pl-8 rounded-lg bg-amber-50 dark:bg-amber-950/30 p-3 border border-amber-200 dark:border-amber-800">
-                                                <div class="flex items-start gap-2">
-                                                    <AlertCircle class="h-3.5 w-3.5 text-amber-600 mt-0.5 shrink-0" />
-                                                    <p class="text-xs leading-relaxed text-muted-foreground">
-                                                        We are not liable for any damages, losses, or issues arising from your use of the wireless network.
-                                                    </p>
-                                                </div>
-                                            </div>
+                                            <p class="pl-11 text-sm text-gray-400">We collect your information for
+                                                marketing purposes and to improve our services. You can opt out at any
+                                                time.</p>
                                         </div>
                                     </div>
                                 </div>
                             </div>
 
                             <!-- Footer -->
-                            <div class="sticky bottom-0 z-10 border-t border-border bg-white dark:bg-gray-900 px-6 py-4">
-                                <div class="flex items-center justify-between gap-4">
-                                    <p class="text-[10px] text-muted-foreground">
-                                        Last updated: October 11, 2025
-                                    </p>
-                                    <div class="flex gap-3">
-                                        <Button
-                                            type="button"
-                                            variant="outline"
-                                            size="sm"
-                                            @click="closeTermsModal"
-                                            class="text-xs"
-                                        >
-                                            Close
-                                        </Button>
-                                        <Button
-                                            type="button"
-                                            size="sm"
-                                            @click="acceptTerms"
-                                            class="text-xs"
-                                        >
-                                            <Check class="mr-1.5 h-3.5 w-3.5" />
-                                            Accept Terms
-                                        </Button>
-                                    </div>
+                            <div
+                                class="sticky bottom-0 border-t border-gray-800 px-6 py-4 bg-gray-900/95 backdrop-blur-sm">
+                                <div class="flex justify-end gap-3">
+                                    <Button variant="outline" size="sm" @click="closeTermsModal"
+                                        class="border-gray-700 hover:bg-gray-800">
+                                        Close
+                                    </Button>
+                                    <Button size="sm" @click="acceptTerms"
+                                        class="bg-red-600 hover:bg-red-700 shadow-lg shadow-red-500/30">
+                                        <Check class="mr-2 h-4 w-4" />
+                                        Accept & Continue
+                                    </Button>
                                 </div>
                             </div>
                         </div>
@@ -597,21 +430,20 @@ const acceptTerms = () => {
 </template>
 
 <style scoped>
-/* Custom scrollbar for dropdown */
 .custom-scrollbar::-webkit-scrollbar {
-    width: 4px;
+    width: 6px;
 }
 
 .custom-scrollbar::-webkit-scrollbar-track {
-    background: transparent;
+    background: rgb(0 0 0 / 0.3);
 }
 
 .custom-scrollbar::-webkit-scrollbar-thumb {
-    background: hsl(var(--orange-300) / 0.3);
-    border-radius: 2px;
+    background: rgb(220 38 38 / 0.5);
+    border-radius: 3px;
 }
 
 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-    background: hsl(var(--orange-400) / 0.4);
+    background: rgb(220 38 38 / 0.7);
 }
 </style>

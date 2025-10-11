@@ -7,7 +7,6 @@ const props = defineProps<LabelProps & { class?: HTMLAttributes['class'] }>()
 
 const delegatedProps = computed(() => {
   const { class: _, ...delegated } = props
-
   return delegated
 })
 </script>
@@ -18,7 +17,9 @@ const delegatedProps = computed(() => {
     v-bind="delegatedProps"
     :class="
       cn(
-        'flex items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50',
+        'flex items-center text-white gap-2 text-sm leading-none font-medium select-none',
+        'group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50',
+        'peer-disabled:cursor-not-allowed peer-disabled:opacity-50',
         props.class,
       )
     "

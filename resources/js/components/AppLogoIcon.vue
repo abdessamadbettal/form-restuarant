@@ -14,7 +14,7 @@ defineProps<Props>();
 
 <template>
      <img
-        src="https://static.tildacdn.com/tild6161-6163-4666-a137-383434323138/_73333x.png"
+        src="https://frankbybasta.e-rockets.io/assets/logo-GuzdoQUh.webp"
         alt="Frank Meat & Taps Logo"
         :class="className"
         class="object-contain"

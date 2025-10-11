@@ -2,14 +2,12 @@
 import { Button } from '@/components/ui/button';
 import AuthBase from '@/layouts/AuthLayout.vue';
 import { Head, router } from '@inertiajs/vue3';
-import { CheckCircle2, Instagram, LogOut } from 'lucide-vue-next';
+import { CheckCircle2, Instagram, LogOut, Sparkles } from 'lucide-vue-next';
 import { onMounted, ref } from 'vue';
 
-// Replace with your actual Instagram URL
 const instagramUrl = 'https://www.instagram.com/frankmeatdxb';
 const countdown = ref(5);
 
-// Auto-redirect after countdown
 onMounted(() => {
     const timer = setInterval(() => {
         countdown.value--;
@@ -37,63 +35,74 @@ const logout = () => {
         <Head title="Thank You" />
 
         <div class="flex flex-col items-center gap-6 text-center">
-            <div class="rounded-full bg-gradient-to-br from-green-100 to-emerald-100 p-4 dark:from-green-900/20 dark:to-emerald-900/20">
-                <CheckCircle2 class="h-16 w-16 text-green-600 dark:text-green-400" />
+            <!-- Success Icon -->
+            <div class="relative">
+                <div class="absolute inset-0 animate-ping rounded-full bg-red-500/20"></div>
+                <div class="relative rounded-full bg-gradient-to-br from-red-600 to-red-700 p-5 shadow-2xl shadow-red-500/50 ring-4 ring-red-500/20">
+                    <CheckCircle2 class="h-16 w-16 text-white" />
+                </div>
             </div>
 
+            <!-- Success Message -->
             <div class="space-y-3">
-                <h2 class="text-2xl font-bold tracking-tight">
-                    🎉 Successfully Registered!
+                <h2 class="text-3xl font-bold text-white">
+                    🎉 Welcome Aboard!
                 </h2>
-                <p class="text-sm leading-relaxed text-muted-foreground">
-                    Welcome to the Frank Meat & Taps family! You'll receive exclusive offers, special promotions, and updates directly to your email.
+                <p class="text-base leading-relaxed text-gray-400 max-w-sm">
+                    You're now part of the Frank Meat & Taps family. Get ready for exclusive offers and updates!
                 </p>
             </div>
 
-            <div class="w-full space-y-3 pt-4">
+            <!-- Instagram Button -->
+            <div class="w-full space-y-4 pt-2">
                 <Button
                     @click="redirectNow"
-                    class="h-12 w-full bg-gradient-to-r from-pink-500 to-purple-600 text-base font-semibold hover:from-pink-600 hover:to-purple-700"
+                    class="h-14 w-full bg-gradient-to-r from-pink-500 via-purple-500 to-purple-600 hover:from-pink-600 hover:via-purple-600 hover:to-purple-700 text-base font-semibold shadow-lg shadow-purple-500/30 hover:shadow-purple-500/50 transition-all"
                     size="lg"
                 >
                     <Instagram class="mr-2 h-5 w-5" />
                     Follow Us on Instagram
+                    <Sparkles class="ml-2 h-4 w-4" />
                 </Button>
 
-                <div class="rounded-lg border bg-muted/50 p-3">
-                    <p class="text-sm text-muted-foreground">
-                        Redirecting automatically in <strong class="text-orange-600">{{ countdown }}</strong> second{{ countdown !== 1 ? 's' : '' }}...
+                <div class="rounded-xl border border-red-900/50 bg-red-950/30 p-4">
+                    <p class="text-sm text-gray-400">
+                        Redirecting in <strong class="text-xl font-bold text-red-500">{{ countdown }}</strong> second{{ countdown !== 1 ? 's' : '' }}
                     </p>
                 </div>
             </div>
 
-            <div class="mt-4 space-y-3 rounded-lg border bg-gradient-to-br from-orange-50 to-amber-50 dark:from-orange-950/30 dark:to-amber-950/30 p-4">
-                <p class="text-sm font-semibold text-foreground">
-                    🎁 What's Next?
-                </p>
-                <ul class="space-y-2 text-left text-xs text-muted-foreground">
-                    <li class="flex items-start gap-2">
-                        <span class="text-orange-600">✓</span>
-                        <span>Follow us on Instagram for daily specials and exclusive content</span>
+            <!-- What's Next Section -->
+            <div class="w-full space-y-4 rounded-xl border border-gray-800 bg-gray-900/50 p-5">
+                <div class="flex items-center gap-2">
+                    <Sparkles class="h-5 w-5 text-red-500" />
+                    <p class="text-base font-semibold text-white">
+                        What's Next?
+                    </p>
+                </div>
+                <ul class="space-y-3 text-left">
+                    <li class="flex items-start gap-3">
+                        <span class="flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full bg-red-950/50 text-sm font-bold text-red-500 ring-1 ring-red-900/50">1</span>
+                        <span class="text-sm text-gray-400">Follow us on Instagram for daily specials and mouth-watering content</span>
                     </li>
-                    <li class="flex items-start gap-2">
-                        <span class="text-orange-600">✓</span>
-                        <span>Check your email for a welcome message and special offers</span>
+                    <li class="flex items-start gap-3">
+                        <span class="flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full bg-red-950/50 text-sm font-bold text-red-500 ring-1 ring-red-900/50">2</span>
+                        <span class="text-sm text-gray-400">Check your email for exclusive welcome offers</span>
                     </li>
-                    <li class="flex items-start gap-2">
-                        <span class="text-orange-600">✓</span>
-                        <span>Visit us in-store to redeem your welcome discount</span>
+                    <li class="flex items-start gap-3">
+                        <span class="flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full bg-red-950/50 text-sm font-bold text-red-500 ring-1 ring-red-900/50">3</span>
+                        <span class="text-sm text-gray-400">Visit us in-store and mention this registration for a special discount</span>
                     </li>
                 </ul>
             </div>
 
             <!-- Logout Button -->
-            <div class="mt-4 w-full">
+            <div class="w-full pt-2">
                 <Button
                     @click="logout"
                     variant="outline"
                     size="sm"
-                    class="w-full gap-2"
+                    class="w-full gap-2 border-gray-800 bg-gray-900/50 hover:bg-gray-900 hover:border-red-500/50 text-gray-400 hover:text-white"
                 >
                     <LogOut class="h-4 w-4" />
                     Logout

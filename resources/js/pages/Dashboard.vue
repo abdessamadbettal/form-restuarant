@@ -33,81 +33,82 @@ const breadcrumbs: BreadcrumbItem[] = [
     <AppLayout :breadcrumbs="breadcrumbs">
         <div class="flex h-full flex-1 flex-col gap-6 p-6">
             <!-- Welcome Header -->
-            <div class="rounded-xl bg-gradient-to-r from-orange-500 to-amber-600 p-6 text-white shadow-lg">
-                <h1 class="text-2xl font-bold">Welcome back, {{ user.name }}! 👋</h1>
-                <p class="mt-2 text-orange-100">Here's what's happening with your restaurant today.</p>
+            <div class="rounded-xl bg-gradient-to-r from-red-600 to-black p-8 text-white shadow-xl shadow-red-500/20">
+                <h1 class="text-3xl font-bold">Welcome back, {{ user.name }}! 👋</h1>
+                <p class="mt-2 text-red-100">Here's what's happening with your restaurant today.</p>
             </div>
 
             <!-- Quick Actions -->
             <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
                 <Link
                     :href="'/admin/users'"
-                    class="group relative overflow-hidden rounded-xl border bg-white p-6 shadow-sm transition-all hover:shadow-md dark:bg-gray-900"
+                    class="group relative overflow-hidden rounded-xl border border-gray-800 bg-gray-900 p-6 shadow-lg transition-all hover:border-red-500/50 hover:shadow-red-500/20"
                 >
                     <div class="flex items-start justify-between">
                         <div>
-                            <p class="text-sm font-medium text-muted-foreground">Manage Users</p>
-                            <h3 class="mt-2 text-2xl font-bold">View All</h3>
+                            <p class="text-sm font-medium text-gray-400">Manage Users</p>
+                            <h3 class="mt-2 text-2xl font-bold text-white">View All</h3>
                         </div>
-                        <div class="rounded-lg bg-orange-100 p-3 dark:bg-orange-900/30">
-                            <Users class="h-6 w-6 text-orange-600" />
+                        <div class="rounded-lg bg-red-950/50 p-3 ring-1 ring-red-900/50">
+                            <Users class="h-6 w-6 text-red-500" />
                         </div>
                     </div>
-                    <p class="mt-4 text-xs text-muted-foreground">View and export user data</p>
+                    <p class="mt-4 text-xs text-gray-500">View and export user data</p>
+                    <div class="absolute inset-x-0 bottom-0 h-1 bg-gradient-to-r from-red-600 to-transparent opacity-0 transition-opacity group-hover:opacity-100"></div>
                 </Link>
 
-                <div class="relative overflow-hidden rounded-xl border bg-white p-6 shadow-sm dark:bg-gray-900">
+                <div class="relative overflow-hidden rounded-xl border border-gray-800 bg-gray-900 p-6 shadow-lg">
                     <div class="flex items-start justify-between">
                         <div>
-                            <p class="text-sm font-medium text-muted-foreground">This Week</p>
-                            <h3 class="mt-2 text-2xl font-bold">New Users</h3>
+                            <p class="text-sm font-medium text-gray-400">This Week</p>
+                            <h3 class="mt-2 text-2xl font-bold text-white">New Users</h3>
                         </div>
-                        <div class="rounded-lg bg-blue-100 p-3 dark:bg-blue-900/30">
-                            <Calendar class="h-6 w-6 text-blue-600" />
+                        <div class="rounded-lg bg-red-950/50 p-3 ring-1 ring-red-900/50">
+                            <Calendar class="h-6 w-6 text-red-500" />
                         </div>
                     </div>
-                    <p class="mt-4 text-xs text-muted-foreground">Check user statistics</p>
+                    <p class="mt-4 text-xs text-gray-500">Check user statistics</p>
                 </div>
 
-                <div class="relative overflow-hidden rounded-xl border bg-white p-6 shadow-sm dark:bg-gray-900">
+                <div class="relative overflow-hidden rounded-xl border border-gray-800 bg-gray-900 p-6 shadow-lg">
                     <div class="flex items-start justify-between">
                         <div>
-                            <p class="text-sm font-medium text-muted-foreground">Growth</p>
-                            <h3 class="mt-2 text-2xl font-bold">Analytics</h3>
+                            <p class="text-sm font-medium text-gray-400">Growth</p>
+                            <h3 class="mt-2 text-2xl font-bold text-white">Analytics</h3>
                         </div>
-                        <div class="rounded-lg bg-green-100 p-3 dark:bg-green-900/30">
-                            <TrendingUp class="h-6 w-6 text-green-600" />
+                        <div class="rounded-lg bg-red-950/50 p-3 ring-1 ring-red-900/50">
+                            <TrendingUp class="h-6 w-6 text-red-500" />
                         </div>
                     </div>
-                    <p class="mt-4 text-xs text-muted-foreground">View growth trends</p>
+                    <p class="mt-4 text-xs text-gray-500">View growth trends</p>
                 </div>
 
-                <div class="relative overflow-hidden rounded-xl border bg-white p-6 shadow-sm dark:bg-gray-900">
+                <div class="relative overflow-hidden rounded-xl border border-gray-800 bg-gray-900 p-6 shadow-lg">
                     <div class="flex items-start justify-between">
                         <div>
-                            <p class="text-sm font-medium text-muted-foreground">Recent</p>
-                            <h3 class="mt-2 text-2xl font-bold">Activity</h3>
+                            <p class="text-sm font-medium text-gray-400">Recent</p>
+                            <h3 class="mt-2 text-2xl font-bold text-white">Activity</h3>
                         </div>
-                        <div class="rounded-lg bg-purple-100 p-3 dark:bg-purple-900/30">
-                            <Clock class="h-6 w-6 text-purple-600" />
+                        <div class="rounded-lg bg-red-950/50 p-3 ring-1 ring-red-900/50">
+                            <Clock class="h-6 w-6 text-red-500" />
                         </div>
                     </div>
-                    <p class="mt-4 text-xs text-muted-foreground">Recent registrations</p>
+                    <p class="mt-4 text-xs text-gray-500">Recent registrations</p>
                 </div>
             </div>
 
             <!-- Main Content -->
-            <div class="flex-1 rounded-xl border bg-white p-6 dark:bg-gray-900">
+            <div class="flex-1 rounded-xl border border-gray-800 bg-gray-900 p-6">
                 <div class="flex flex-col items-center justify-center py-12">
-                    <div class="rounded-full bg-orange-100 p-6 dark:bg-orange-900/30">
-                        <Users class="h-12 w-12 text-orange-600" />
+                    <div class="rounded-full bg-red-950/50 p-6 ring-1 ring-red-900/50">
+                        <Users class="h-12 w-12 text-red-500" />
                     </div>
-                    <h2 class="mt-4 text-xl font-semibold">User Management System</h2>
-                    <p class="mt-2 text-center text-sm text-muted-foreground">
+                    <h2 class="mt-4 text-xl font-semibold text-white">User Management System</h2>
+                    <p class="mt-2 text-center text-sm text-gray-400">
                         Manage your registered users, export data, and view analytics
                     </p>
                     <Link :href="'/admin/users'" class="mt-6">
-                        <Button size="lg">
+                        <Button size="lg" class="bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 shadow-lg shadow-red-500/30">
                             Go to Users
                         </Button>
                     </Link>
