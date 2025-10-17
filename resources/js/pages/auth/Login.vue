@@ -27,7 +27,7 @@ defineProps<{
 
         <div
             v-if="status"
-            class="mb-4 rounded-lg bg-green-50 dark:bg-green-950/30 border border-green-200 p-3 text-center text-sm text-green-600"
+            class="mb-4 rounded-lg bg-green-50 border border-green-200 p-3 text-center text-sm text-green-700"
         >
             {{ status }}
         </div>
@@ -40,27 +40,28 @@ defineProps<{
         >
             <div class="grid gap-6">
                 <div class="grid gap-2">
-                    <Label for="email" class="flex items-center gap-1.5">
+                    <Label for="email" variant="light" class="flex items-center gap-1.5">
                         <Mail class="h-3.5 w-3.5 text-red-600" />
                         Email address
                     </Label>
                     <Input
                         id="email"
                         type="email"
+                        variant="light"
                         name="email"
                         required
                         autofocus
                         :tabindex="1"
                         autocomplete="email"
                         placeholder="admin@frankmeat.com"
-                        class="h-10 focus:ring-2 focus:ring-red-500"
+                        class="h-10"
                     />
                     <InputError :message="errors.email" />
                 </div>
 
                 <div class="grid gap-2">
                     <div class="flex items-center justify-between">
-                        <Label for="password" class="flex items-center gap-1.5">
+                        <Label for="password" variant="light" class="flex items-center gap-1.5">
                             <Lock class="h-3.5 w-3.5 text-red-600" />
                             Password
                         </Label>
@@ -76,24 +77,25 @@ defineProps<{
                     <Input
                         id="password"
                         type="password"
+                        variant="light"
                         name="password"
                         required
                         :tabindex="2"
                         autocomplete="current-password"
                         placeholder="Enter password"
-                        class="h-10 focus:ring-2 focus:ring-red-500"
+                        class="h-10"
                     />
                     <InputError :message="errors.password" />
                 </div>
 
-                <Label for="remember" class="flex items-center space-x-3 cursor-pointer">
+                <Label for="remember" class="flex items-center space-x-3 cursor-pointer text-gray-700">
                     <Checkbox id="remember" name="remember" :tabindex="3" />
                     <span class="text-sm">Remember me</span>
                 </Label>
 
                 <Button
                     type="submit"
-                    class="h-10 w-full bg-gradient-to-r from-red-600 to-black hover:from-red-700 hover:to-gray-900"
+                    class="h-10 w-full bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800"
                     :tabindex="4"
                     :disabled="processing"
                     data-test="login-button"
@@ -104,14 +106,14 @@ defineProps<{
             </div>
 
             <!-- Customer Link -->
-            <div class="space-y-3 pt-3 border-t">
-                <div class="text-center text-sm text-muted-foreground">
+            <div class="space-y-3 pt-3 border-t border-gray-200">
+                <div class="text-center text-sm text-gray-500">
                     Are you a customer?
                 </div>
                 <TextLink
                     :href="register()"
                     :tabindex="6"
-                    class="flex items-center justify-center gap-2 rounded-lg border border-red-200 dark:border-red-900 bg-red-50 dark:bg-red-950/30 px-4 py-2.5 text-sm font-medium text-red-600 hover:bg-red-100 dark:hover:bg-red-950/50"
+                    class="flex items-center justify-center gap-2 rounded-lg border border-red-200 bg-red-50 px-4 py-2.5 text-sm font-medium text-red-600 hover:bg-red-100"
                 >
                     <UserPlus class="h-4 w-4" />
                     Sign up for Wi-Fi

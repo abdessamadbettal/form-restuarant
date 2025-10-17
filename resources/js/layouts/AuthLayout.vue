@@ -14,9 +14,10 @@ defineProps<{
         <!-- Background Image -->
         <div
             class="absolute inset-0 z-0 bg-cover bg-center bg-no-repeat"
-            style="background-image: url('/bg.jpg'); filter: brightness(0.55) blur(1px);"
+            style="background-image: url('/bg.jpg'); filter: brightness(0.4) blur(1px);"
             aria-hidden="true"
         ></div>
+
         <!-- Decorative Background Elements -->
         <div class="absolute inset-0 overflow-hidden pointer-events-none">
             <!-- Animated floating food icons -->
@@ -30,7 +31,7 @@ defineProps<{
             <div class="absolute -bottom-20 -left-20 h-64 w-64 rounded-full bg-gradient-to-tr from-red-600/10 to-gray-900/10 blur-3xl"></div>
         </div>
 
-        <div class="relative flex flex-1 flex-col items-center justify-center gap-4 p-4 md:p-6">
+        <div class="relative flex flex-1 flex-col items-center justify-center gap-4 p-4 md:p-6 z-10">
             <div class="w-full max-w-md">
                 <div class="flex flex-col gap-4">
                     <!-- Logo and Header -->
@@ -46,20 +47,20 @@ defineProps<{
                         </Link>
 
                         <div class="space-y-2 text-center">
-                            <h1 class="text-2xl font-bold bg-gradient-to-r from-red-300 to-red-600 bg-clip-text text-transparent">
+                            <h1 class="text-2xl font-bold text-white drop-shadow-lg">
                                 {{ title }}
                             </h1>
-                            <p class="text-xs text-muted-foreground max-w-xs mx-auto leading-relaxed">
+                            <p class="text-sm text-gray-300 max-w-xs mx-auto leading-relaxed">
                                 {{ description }}
                             </p>
                         </div>
                     </div>
 
-                    <!-- Card Container -->
-                    <div class="relative rounded-xl border border-red-900/50 bg-gray-900/90 backdrop-blur-xl p-6 shadow-2xl shadow-red-500/10">
+                    <!-- Card Container - LIGHT VARIANT -->
+                    <div class="relative rounded-2xl border border-gray-200 bg-white shadow-2xl shadow-black/30 p-8">
                         <!-- Decorative corner accent -->
-                        <div class="absolute -right-px -top-px h-12 w-12 overflow-hidden rounded-tr-xl">
-                            <div class="absolute right-0 top-0 h-full w-full bg-gradient-to-bl from-red-600/20 to-transparent"></div>
+                        <div class="absolute -right-px -top-px h-16 w-16 overflow-hidden rounded-tr-2xl">
+                            <div class="absolute right-0 top-0 h-full w-full bg-gradient-to-bl from-red-500/20 to-transparent"></div>
                         </div>
 
                         <slot />

@@ -45,10 +45,10 @@ const logout = () => {
 
             <!-- Success Message -->
             <div class="space-y-3">
-                <h2 class="text-3xl font-bold text-white">
+                <h2 class="text-3xl font-bold text-gray-900">
                     🎉 Welcome Aboard!
                 </h2>
-                <p class="text-base leading-relaxed text-gray-400 max-w-sm">
+                <p class="text-base leading-relaxed text-gray-600 max-w-sm">
                     You're now part of the Frank Meat & Taps family. Get ready for exclusive offers and updates!
                 </p>
             </div>
@@ -65,33 +65,33 @@ const logout = () => {
                     <Sparkles class="ml-2 h-4 w-4" />
                 </Button>
 
-                <div class="rounded-xl border border-red-900/50 bg-red-950/30 p-4">
-                    <p class="text-sm text-gray-400">
-                        Redirecting in <strong class="text-xl font-bold text-red-500">{{ countdown }}</strong> second{{ countdown !== 1 ? 's' : '' }}
+                <div class="rounded-xl border border-red-200 bg-red-50 p-4">
+                    <p class="text-sm text-gray-600">
+                        Redirecting in <strong class="text-xl font-bold text-red-600">{{ countdown }}</strong> second{{ countdown !== 1 ? 's' : '' }}
                     </p>
                 </div>
             </div>
 
             <!-- What's Next Section -->
-            <div class="w-full space-y-4 rounded-xl border border-gray-800 bg-gray-900/50 p-5">
+            <div class="w-full space-y-4 rounded-xl border border-gray-200 bg-gray-50 p-5">
                 <div class="flex items-center gap-2">
-                    <Sparkles class="h-5 w-5 text-red-500" />
-                    <p class="text-base font-semibold text-white">
+                    <Sparkles class="h-5 w-5 text-red-600" />
+                    <p class="text-base font-semibold text-gray-900">
                         What's Next?
                     </p>
                 </div>
                 <ul class="space-y-3 text-left">
                     <li class="flex items-start gap-3">
-                        <span class="flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full bg-red-950/50 text-sm font-bold text-red-500 ring-1 ring-red-900/50">1</span>
-                        <span class="text-sm text-gray-400">Follow us on Instagram for daily specials and mouth-watering content</span>
+                        <span class="flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full bg-red-100 text-sm font-bold text-red-600 ring-2 ring-red-200">1</span>
+                        <span class="text-sm text-gray-700">Follow us on Instagram for daily specials and mouth-watering content</span>
                     </li>
                     <li class="flex items-start gap-3">
-                        <span class="flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full bg-red-950/50 text-sm font-bold text-red-500 ring-1 ring-red-900/50">2</span>
-                        <span class="text-sm text-gray-400">Check your email for exclusive welcome offers</span>
+                        <span class="flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full bg-red-100 text-sm font-bold text-red-600 ring-2 ring-red-200">2</span>
+                        <span class="text-sm text-gray-700">Check your email for exclusive welcome offers</span>
                     </li>
                     <li class="flex items-start gap-3">
-                        <span class="flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full bg-red-950/50 text-sm font-bold text-red-500 ring-1 ring-red-900/50">3</span>
-                        <span class="text-sm text-gray-400">Visit us in-store and mention this registration for a special discount</span>
+                        <span class="flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full bg-red-100 text-sm font-bold text-red-600 ring-2 ring-red-200">3</span>
+                        <span class="text-sm text-gray-700">Visit us in-store and mention this registration for a special discount</span>
                     </li>
                 </ul>
             </div>
@@ -102,7 +102,7 @@ const logout = () => {
                     @click="logout"
                     variant="outline"
                     size="sm"
-                    class="w-full gap-2 border-gray-800 bg-gray-900/50 hover:bg-gray-900 hover:border-red-500/50 text-gray-400 hover:text-white"
+                    class="w-full gap-2 border-gray-300 bg-gray-50 hover:bg-white hover:border-red-400 text-gray-700 hover:text-gray-900"
                 >
                     <LogOut class="h-4 w-4" />
                     Logout

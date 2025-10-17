@@ -119,179 +119,169 @@ const acceptTerms = () => {
 </script>
 
 <template>
-    <AuthBase title="Frank Meat & Taps Wi-Fi" description="Sign up for exclusive offers and Wi-Fi access">
-
+    <AuthBase title="Frank Meat & Taps" description="Sign up for exclusive offers and Wi-Fi access">
         <Head title="Register" />
 
         <Form v-bind="RegisteredUserController.store.form()" v-slot="{ errors, processing, data }" class="space-y-5">
             <!-- Progress Bar -->
             <div class="space-y-2">
                 <div class="flex items-center justify-between">
-                    <span class="text-xs font-medium text-gray-400">Complete your profile</span>
-                    <span class="text-xs font-bold text-red-500">{{ Math.round(formProgress) }}%</span>
+                    <span class="text-xs font-medium text-gray-600">Complete your profile</span>
+                    <span class="text-xs font-bold text-red-600">{{ Math.round(formProgress) }}%</span>
                 </div>
-                <div class="h-2 w-full overflow-hidden rounded-full bg-gray-800/50 ring-1 ring-gray-800">
+                <div class="h-2 w-full overflow-hidden rounded-full bg-gray-200 ring-1 ring-gray-300">
                     <div class="h-full bg-gradient-to-r from-red-600 via-red-500 to-red-600 transition-all duration-500 ease-out shadow-lg shadow-red-500/50"
                         :style="{ width: `${formProgress}%` }"></div>
                 </div>
             </div>
 
+            <!-- Country Field -->
+            <div class="space-y-2">
+                <Label for="country" variant="light" class="flex items-center gap-2">
+                    <Globe class="h-4 w-4 text-red-600" />
+                    <span>Country</span>
+                    <span class="text-red-600">*</span>
+                </Label>
+
+                <div class="country-select-wrapper relative">
+                    <input ref="countryInputRef" type="hidden" name="country" required :value="selectedCountry?.cca2 || ''" />
+
+                    <button type="button" @click="toggleDropdown" :tabindex="4"
+                        class="flex h-12 w-full items-center justify-between rounded-xl border border-gray-300 bg-gray-50 px-4 py-3 text-sm transition-all hover:border-red-400 hover:bg-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-500 focus-visible:ring-offset-2 focus-visible:ring-offset-white"
+                        :class="{ 'ring-2 ring-red-500 ring-offset-2 ring-offset-white border-red-500': isDropdownOpen }">
+                        <span class="flex items-center gap-3">
+                            <template v-if="selectedCountry">
+                                <img :src="selectedCountry.flags.svg" :alt="selectedCountry.name.common"
+                                    class="h-5 w-7 rounded object-cover shadow-md ring-1 ring-gray-300" />
+                                <span class="truncate font-medium text-gray-900">{{ selectedCountry.name.common }}</span>
+                            </template>
+                            <template v-else>
+                                <span class="text-gray-400">
+                                    {{ isLoadingCountries ? 'Loading countries...' : 'Select your country' }}
+                                </span>
+                            </template>
+                        </span>
+                        <ChevronDown class="h-4 w-4 text-gray-500 transition-transform duration-200"
+                            :class="{ 'rotate-180 text-red-600': isDropdownOpen }" />
+                    </button>
+
+                    <Transition enter-active-class="transition duration-200 ease-out"
+                        enter-from-class="opacity-0 scale-95" enter-to-class="opacity-100 scale-100"
+                        leave-active-class="transition duration-150 ease-in"
+                        leave-from-class="opacity-100 scale-100" leave-to-class="opacity-0 scale-95">
+                        <div v-if="isDropdownOpen"
+                            class="absolute z-50 mt-2 w-full rounded-xl border border-gray-200 bg-white shadow-2xl shadow-black/20 ring-1 ring-red-500/20">
+                            <div class="border-b border-gray-200 p-3">
+                                <div class="relative">
+                                    <Search class="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
+                                    <input v-model="searchQuery" type="text" placeholder="Search countries..."
+                                        class="h-10 w-full rounded-lg border border-gray-300 bg-gray-50 pl-10 pr-3 text-sm text-gray-900 placeholder-gray-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-500"
+                                        @click.stop />
+                                </div>
+                            </div>
+
+                            <div class="custom-scrollbar max-h-[280px] overflow-y-auto p-2">
+                                <template v-if="isLoadingCountries">
+                                    <div class="flex items-center justify-center py-8">
+                                        <LoaderCircle class="h-6 w-6 animate-spin text-red-600" />
+                                    </div>
+                                </template>
+
+                                <template v-else-if="filteredCountries.length === 0">
+                                    <div class="py-8 text-center text-sm text-gray-500">
+                                        No countries found
+                                    </div>
+                                </template>
+
+                                <template v-else>
+                                    <button v-for="country in filteredCountries" :key="country.cca2" type="button"
+                                        @click="selectCountry(country)"
+                                        class="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm transition-colors hover:bg-red-50"
+                                        :class="{ 'bg-red-50 ring-1 ring-red-200': selectedCountry?.cca2 === country.cca2 }">
+                                        <img :src="country.flags.svg" :alt="country.name.common"
+                                            class="h-4 w-6 rounded object-cover shadow-sm ring-1 ring-gray-300" />
+                                        <span class="flex-1 truncate text-left text-gray-900">{{ country.name.common }}</span>
+                                        <Check v-if="selectedCountry?.cca2 === country.cca2"
+                                            class="h-4 w-4 text-red-600" />
+                                    </button>
+                                </template>
+                            </div>
+                        </div>
+                    </Transition>
+                </div>
+
+                <InputError :message="errors.country" />
+            </div>
 
             <!-- Name Field -->
             <div class="group space-y-2">
-                <Label for="name" class="flex items-center gap-2">
-                    <User class="h-4 w-4 text-red-500" />
+                <Label for="name" variant="light" class="flex items-center gap-2">
+                    <User class="h-4 w-4 text-red-600" />
                     <span>Full Name</span>
-                    <span class="text-red-500">*</span>
+                    <span class="text-red-600">*</span>
                 </Label>
                 <div class="relative">
-                    <Input id="name" type="text" required autofocus :tabindex="1" autocomplete="name" name="name"
+                    <Input id="name" type="text" variant="light" required autofocus :tabindex="1" autocomplete="name" name="name"
                         placeholder="Enter your full name" class="peer" @input="updateProgress" />
                     <div
-                        class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-red-500 opacity-0 transition-opacity peer-focus:opacity-100">
+                        class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-red-600 opacity-0 transition-opacity peer-focus:opacity-100">
                         <Sparkles class="h-4 w-4" />
                     </div>
                 </div>
                 <InputError :message="errors.name" />
             </div>
 
-            <div class="grid grid-cols-1 gap-5 md:grid-cols-2">
-
-                <!-- Country Field -->
-                <div class="space-y-2">
-                    <Label for="country" class="flex items-center gap-2">
-                        <Globe class="h-4 w-4 text-red-500" />
-                        <span>Country</span>
-                        <span class="text-red-500">*</span>
-                    </Label>
-
-                    <div class="country-select-wrapper relative">
-                        <input ref="countryInputRef" type="hidden" name="country" required
-                            :value="selectedCountry?.cca2 || ''" />
-
-                        <button type="button" @click="toggleDropdown" :tabindex="4"
-                            class="flex h-12 w-full items-center justify-between rounded-xl border border-gray-800 bg-gray-900/50 px-4 py-3 text-sm ring-offset-black transition-all hover:border-red-500/50 hover:bg-gray-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-500 focus-visible:ring-offset-2 focus-visible:ring-offset-black"
-                            :class="{ 'ring-2 ring-red-500 ring-offset-2 ring-offset-black border-red-500': isDropdownOpen }">
-                            <span class="flex items-center gap-3">
-                                <template v-if="selectedCountry">
-                                    <img :src="selectedCountry.flags.svg" :alt="selectedCountry.name.common"
-                                        class="h-5 w-7 rounded object-cover shadow-md ring-1 ring-gray-700" />
-                                    <span class="truncate font-medium text-white">{{ selectedCountry.name.common
-                                        }}</span>
-                                </template>
-                                <template v-else>
-                                    <span class="text-gray-500">
-                                        {{ isLoadingCountries ? 'Loading countries...' : 'your country' }}
-                                    </span>
-                                </template>
-                            </span>
-                            <ChevronDown class="h-4 w-4 text-gray-500 transition-transform duration-200"
-                                :class="{ 'rotate-180 text-red-500': isDropdownOpen }" />
-                        </button>
-
-                        <Transition enter-active-class="transition duration-200 ease-out"
-                            enter-from-class="opacity-0 scale-95" enter-to-class="opacity-100 scale-100"
-                            leave-active-class="transition duration-150 ease-in"
-                            leave-from-class="opacity-100 scale-100" leave-to-class="opacity-0 scale-95">
-                            <div v-if="isDropdownOpen"
-                                class="absolute z-50 mt-2 w-full rounded-xl border border-gray-800 bg-gray-900 shadow-2xl shadow-black/50 ring-1 ring-red-500/20">
-                                <div class="border-b border-gray-800 p-3">
-                                    <div class="relative">
-                                        <Search
-                                            class="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-500" />
-                                        <input v-model="searchQuery" type="text" placeholder="Search countries..."
-                                            class="h-10 w-full rounded-lg border border-gray-800 bg-black/50 pl-10 pr-3 text-sm text-white placeholder-gray-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-500"
-                                            @click.stop />
-                                    </div>
-                                </div>
-
-                                <div class="custom-scrollbar max-h-[280px] overflow-y-auto p-2">
-                                    <template v-if="isLoadingCountries">
-                                        <div class="flex items-center justify-center py-8">
-                                            <LoaderCircle class="h-6 w-6 animate-spin text-red-500" />
-                                        </div>
-                                    </template>
-
-                                    <template v-else-if="filteredCountries.length === 0">
-                                        <div class="py-8 text-center text-sm text-gray-500">
-                                            No countries found
-                                        </div>
-                                    </template>
-
-                                    <template v-else>
-                                        <button v-for="country in filteredCountries" :key="country.cca2" type="button"
-                                            @click="selectCountry(country)"
-                                            class="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm transition-colors hover:bg-red-950/30"
-                                            :class="{ 'bg-red-950/50 ring-1 ring-red-500/50': selectedCountry?.cca2 === country.cca2 }">
-                                            <img :src="country.flags.svg" :alt="country.name.common"
-                                                class="h-4 w-6 rounded object-cover shadow-sm ring-1 ring-gray-700" />
-                                            <span class="flex-1 truncate text-left text-white">{{ country.name.common
-                                                }}</span>
-                                            <Check v-if="selectedCountry?.cca2 === country.cca2"
-                                                class="h-4 w-4 text-red-500" />
-                                        </button>
-                                    </template>
-                                </div>
-                            </div>
-                        </Transition>
-                    </div>
-
-                    <InputError :message="errors.country" />
-                </div>
-                <!-- Phone Field -->
-                <div class="group space-y-2 ">
-                    <Label for="phone" class="flex items-center gap-2">
-                        <Phone class="h-4 w-4 text-red-500" />
-                        <span>Phone Number</span>
-                        <span class="text-red-500">*</span>
-                    </Label>
-                    <div class="relative">
-                        <Input id="phone" type="tel" required :tabindex="3" autocomplete="tel" name="phone"
-                            placeholder="+971 50 123 4567" class="peer" @input="updateProgress" />
-                        <div
-                            class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-red-500 opacity-0 transition-opacity peer-focus:opacity-100">
-                            <Sparkles class="h-4 w-4" />
-                        </div>
-                    </div>
-                    <InputError :message="errors.phone" />
-                </div>
-            </div>
-
             <!-- Email Field -->
             <div class="group space-y-2">
-                <Label for="email" class="flex items-center gap-2">
-                    <Mail class="h-4 w-4 text-red-500" />
+                <Label for="email" variant="light" class="flex items-center gap-2">
+                    <Mail class="h-4 w-4 text-red-600" />
                     <span>Email Address</span>
-                    <span class="text-red-500">*</span>
+                    <span class="text-red-600">*</span>
                 </Label>
                 <div class="relative">
-                    <Input id="email" type="email" required :tabindex="2" autocomplete="email" name="email"
+                    <Input id="email" type="email" variant="light" required :tabindex="2" autocomplete="email" name="email"
                         placeholder="your@email.com" class="peer" @input="updateProgress" />
                     <div
-                        class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-red-500 opacity-0 transition-opacity peer-focus:opacity-100">
+                        class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-red-600 opacity-0 transition-opacity peer-focus:opacity-100">
                         <Sparkles class="h-4 w-4" />
                     </div>
                 </div>
                 <InputError :message="errors.email" />
             </div>
 
-
+            <!-- Phone Field -->
+            <div class="group space-y-2">
+                <Label for="phone" variant="light" class="flex items-center gap-2">
+                    <Phone class="h-4 w-4 text-red-600" />
+                    <span>Phone Number</span>
+                    <span class="text-red-600">*</span>
+                </Label>
+                <div class="relative">
+                    <Input id="phone" type="tel" variant="light" required :tabindex="3" autocomplete="tel" name="phone"
+                        placeholder="+971 50 123 4567" class="peer" @input="updateProgress" />
+                    <div
+                        class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-red-600 opacity-0 transition-opacity peer-focus:opacity-100">
+                        <Sparkles class="h-4 w-4" />
+                    </div>
+                </div>
+                <InputError :message="errors.phone" />
+            </div>
 
             <!-- Terms -->
             <div class="space-y-2">
-                <div class="flex items-start gap-3 rounded-lg border border-gray-800 bg-gray-900/30 p-4">
+                <div class="flex items-start gap-3 rounded-lg border border-gray-200 bg-gray-50 p-4">
                     <input id="terms" type="checkbox" v-model="acceptedTerms" @change="updateProgress" :tabindex="5"
                         required
-                        class="mt-0.5 h-5 w-5 rounded border-gray-700 bg-gray-800 text-red-600 focus:ring-2 focus:ring-red-500 focus:ring-offset-2 focus:ring-offset-black"
-                        style="accent-color: #b01218" />
-                    <label for="terms" class="flex-1 text-sm leading-relaxed text-gray-400">
+                        class="mt-0.5 h-5 w-5 rounded border-gray-300 bg-white text-red-600  focus:ring-offset-2 focus:ring-offset-white"
+                        style="accent-color: #dc2626" />
+                    <label for="terms" class="flex-1 text-sm leading-relaxed text-gray-600">
                         I agree to the
                         <button type="button" @click="openTermsModal"
-                            class="font-semibold text-red-500 hover:text-red-400 underline decoration-red-500/30 underline-offset-2 transition-colors">
+                            class="font-semibold text-red-600 hover:text-red-700 underline decoration-red-600/30 underline-offset-2 transition-colors">
                             Wi-Fi Terms of Service
                         </button>
                         and consent to receive promotional emails
-                        <span class="text-red-500">*</span>
+                        <span class="text-red-600">*</span>
                     </label>
                 </div>
                 <InputError :message="errors.terms" />
@@ -310,11 +300,11 @@ const acceptTerms = () => {
             </p> -->
 
             <!-- Admin Login Link -->
-            <div class="pt-4 border-t border-gray-800">
+            <div class="pt-4 border-t border-gray-200">
                 <div class="flex items-center justify-center gap-2 text-sm text-gray-500">
                     <Lock class="h-4 w-4" />
                     <span>Admin?</span>
-                    <TextLink :href="login()" class="font-medium text-red-500 hover:text-red-400">
+                    <TextLink :href="login()" class="font-medium text-red-600 hover:text-red-700">
                         Login here
                     </TextLink>
                 </div>
@@ -435,7 +425,7 @@ const acceptTerms = () => {
 }
 
 .custom-scrollbar::-webkit-scrollbar-track {
-    background: rgb(0 0 0 / 0.3);
+    background: rgb(243 244 246);
 }
 
 .custom-scrollbar::-webkit-scrollbar-thumb {
