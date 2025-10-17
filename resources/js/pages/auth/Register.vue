@@ -119,7 +119,7 @@ const acceptTerms = () => {
 </script>
 
 <template>
-    <AuthBase title="Frank Meat & Taps" description="Sign up for exclusive offers and Wi-Fi access">
+    <AuthBase title="Frank Meat & Taps Wi-Fi" description="Sign up for exclusive offers and Wi-Fi access">
 
         <Head title="Register" />
 

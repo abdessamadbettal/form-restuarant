@@ -10,7 +10,13 @@ defineProps<{
 </script>
 
 <template>
-    <div class="relative flex min-h-svh overflow-hidden bg-gradient-to-br from-black via-black to-red-900 ">
+    <div class="relative flex min-h-svh overflow-hidden bg-black">
+        <!-- Background Image -->
+        <div
+            class="absolute inset-0 z-0 bg-cover bg-center bg-no-repeat"
+            style="background-image: url('/bg.jpg'); filter: brightness(0.55) blur(1px);"
+            aria-hidden="true"
+        ></div>
         <!-- Decorative Background Elements -->
         <div class="absolute inset-0 overflow-hidden pointer-events-none">
             <!-- Animated floating food icons -->
@@ -33,7 +39,7 @@ defineProps<{
                             :href="home()"
                             class="group flex flex-col items-center gap-2 font-medium transition-transform hover:scale-105"
                         >
-                            <div class="relative flex h-20 w-20 items-center justify-center ">
+                            <div class="relative flex h-20 w-20 items-center justify-center rounded-lg">
                                 <AppLogoIcon class="h-16 w-16" />
                             </div>
                             <span class="sr-only">{{ title }}</span>
